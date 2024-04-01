@@ -1,0 +1,81 @@
+# import required libraries
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.neighbors import KNeighborsClassifier
+
+# load the iris dataset
+iris = datasets.load_iris()
+
+# Extract only sepal length and sepal width features
+X = iris.data[:, :2]
+y = iris.target
+
+# Filter the dataset for Iris Setosa and Iris Versicolor classes
+X_filtered = X[y != 2]
+y_filtered = y[y != 2]
+
+# Visualize Iris Setosa and Iris Versicolor classes based on sepal length and width
+plt.figure(figsize=(8, 6))
+plt.scatter(X_filtered[y_filtered == 0][:, 0], X_filtered[y_filtered == 0][:, 1], label='Iris Setosa', color='blue')
+plt.scatter(X_filtered[y_filtered == 1][:, 0], X_filtered[y_filtered == 1][:, 1], label='Iris Versicolor', color='orange')
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('Iris Dataset: Sepal Length vs Sepal Width')
+plt.legend()
+plt.show()
+
+# Define a list of K values for KNN
+k_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+for k in k_values:
+    print("k value :", k)
+
+    # Convert data to pandas DataFrame
+    iris_df = pd.DataFrame(data=np.c_[iris['data'], iris['target']], columns=iris['feature_names'] + ['target'])
+    iris_df.head()
+
+    # Select sepal length and sepal width features and target classes
+    x = iris_df[['sepal length (cm)', 'sepal width (cm)']]
+    y = (iris_df['target'] != 2).astype(int)  # 1 for Iris Setosa, 0 for Iris Versicolor
+    print(x)
+    print(y)
+    # Split the dataset into train and test sets
+    X_train, X_test, classes_train, classes_test = train_test_split(x, y, test_size=0.21, random_state=42)
+    # Train the KNN classifier with the current K value
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, classes_train)
+    # Test the trained classifier on the test set
+    y_pred = knn.predict(X_test)
+    # Calculate accuracy
+    accuracy = accuracy_score(classes_test, y_pred)
+    print("Accuracy:", accuracy)
+    # Display the confusion matrix
+    cm = confusion_matrix(classes_test, y_pred)
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
